@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from opinion_networks.engine import Value
 import json
+import pdb
 
 class Opinion:
     def __init__(self, opinion_type: str, reasoning: str, score: Value):
@@ -22,6 +23,7 @@ class OpinionPair:
     def __init__(self, opinions_json: str, law_str: str):
         self.law: str = law_str
         try:
+            pdb.set_trace()
             opinions = self.from_json(opinions_json)
         except:
             pdb.set_trace()
