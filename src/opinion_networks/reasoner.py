@@ -23,7 +23,10 @@ from opinion_networks.opinion import Opinion, OpinionPair
 class Reasoner:
     def __init__(self, background: Optional = None, language: str='English', **kwargs):
         self.opinions = None
-        self.llm = OpenAI(temperature=kwargs['temperature'], model_name="text-davinci-003", max_tokens= 3000)
+        if 'llm' not in kwargs or kwargs['llm'] is None:
+            self.llm = OpenAI(temperature=kwargs['temperature'], model_name="text-davinci-003", max_tokens= 3000)
+        else:
+            self.llm = kwargs['llm']
         self.type = kwargs['type']
         self.background = background
         self.language = language

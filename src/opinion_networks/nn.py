@@ -22,7 +22,7 @@ import os
 sys.path.append(".")
 from opinion_networks.reasoner import Reasoner
 from opinion_networks.engine import Value
-from opinion_networks.dataset import Summary
+
 from opinion_networks.opinion import OpinionPair
 
 class Module:
@@ -98,17 +98,17 @@ class Layer(Module):
         return f"Layer of [{', '.join(str(n) for n in self.neurons)}]"
 
 class MLP(Module):
-    def __init__(self, nin, nouts):
+    def __init__(self, nin, nouts, **kwargs):
         sz = [nin] + nouts
         self.layers = []
         self.opinions = []
         for i in range(len(nouts)):
             if i == 0:
-                self.layers.append(Layer(sz[i], sz[i+1], type='input'))
+                self.layers.append(Layer(sz[i], sz[i+1], type='input', **kwargs))
             elif i == len(nouts)-1:
-                self.layers.append(Layer(sz[i], sz[i+1], type='output'))
+                self.layers.append(Layer(sz[i], sz[i+1], type='output', **kwargs))
             else:
-                self.layers.append(Layer(sz[i], sz[i+1], type='hidden'))
+                self.layers.append(Layer(sz[i], sz[i+1], type='hidden', **kwargs))
 
     def __call__(self,  doc):
         opinions = doc

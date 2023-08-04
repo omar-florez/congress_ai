@@ -1,3 +1,6 @@
 .venv/
 .DS_Store
 pdfs/
+**/*.pyc
+**/.DS_Store
+__pycache__/
