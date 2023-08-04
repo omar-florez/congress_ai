@@ -21,7 +21,10 @@ class Opinion:
 class OpinionPair:
     def __init__(self, opinions_json: str, law_str: str):
         self.law: str = law_str
-        opinions = self.from_json(opinions_json)
+        try:
+            opinions = self.from_json(opinions_json)
+        except:
+            pdb.set_trace()
         self.pos_opinion: Opinion = opinions[0]
         self.neg_opinion: Opinion = opinions[1]
 

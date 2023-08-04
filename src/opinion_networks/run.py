@@ -8,8 +8,8 @@ from opinion_networks.nn import MLP
 from opinion_networks import trace_graph
 
 if __name__ == '__main__':
-    os.environ["SERPAPI_API_KEY"] = "a3e7d04fddfaad4939476007b2713e4ca614354fa7d0221024827e716a9c4c74"
-    os.environ["OPENAI_API_KEY"] = "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"
+    os.environ["SERPAPI_API_KEY"] = ""
+    os.environ["OPENAI_API_KEY"] = ""
     
     xs = [
         [1.0],
