@@ -12,6 +12,7 @@ read_template = """Considering the following law:
 {background}
 Return two opinions, one in favor and another against that law, in the following JSON format:
 
+```json
 [
 {{
 "Opinion": "+",
@@ -24,8 +25,9 @@ Return two opinions, one in favor and another against that law, in the following
 "Score": "A numeric value between 0.0 and 1.0 indicating how much you are support your opinion."
 }}
 ]
+```
 
-The output should be in {language}. 
+The output should be in {language} and only include the JSON output.
 
 
 OUTPUT:
@@ -43,6 +45,7 @@ Your task is to use your critical thinking to generate a two well-thought and di
 
 Return the two opinions in the following JSON format:
 
+```json
 [
 {{
 "Opinion": "+",
@@ -55,8 +58,9 @@ Return the two opinions in the following JSON format:
 "Score": "A numeric value between 0.0 and 1.0 indicating how much you are support your opinion."
 }}
 ]
+```
 
-The output should be in {language}. 
+The output should be in {language} and only include the JSON output. 
 
 
 OUTPUT:

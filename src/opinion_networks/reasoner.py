@@ -85,6 +85,7 @@ class Reasoner:
             background=opinion_prompt.get_background(self.background), 
             language=self.language
         )   
+        ##pdb.set_trace()
         opinions = OpinionPair(output_json, law_str)
         return opinions   
 
@@ -96,6 +97,7 @@ class Reasoner:
             language=self.language
         )
         
+        ##pdb.set_trace()
         output_json = self.llm(prompt)
         opinions = OpinionPair(output_json, law_str)
         return opinions      
@@ -106,7 +108,9 @@ class Reasoner:
     def __call__(self, opinions: Any, background: Any) -> OpinionPair:
         if self.type == 'input':
             opinions = self.read_chain(law_str=opinions)
+            print(f'{self.type}@read_chain: {opinions}')
         else:
             opinions = self.reduce_chain(opinions=opinions)
+            print(f'{self.type}@reduce_chain: {opinions}')
         return opinions
         

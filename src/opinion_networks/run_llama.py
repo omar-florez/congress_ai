@@ -1,0 +1,140 @@
+import os, sys
+sys.path.append(".")
+from tqdm import tqdm
+import pdb
+
+from opinion_networks.dataset import Summary
+from opinion_networks.nn import MLP
+from opinion_networks import trace_graph
+
+import torch
+from torch import cuda, bfloat16
+import transformers
+from transformers import StoppingCriteria, StoppingCriteriaList
+from langchain.llms import HuggingFacePipeline
+
+def load_llm(model_id, hf_auth):
+    device = f'cuda:{cuda.current_device()}' if cuda.is_available() else 'cpu'
+    # set quantization configuration to load large model with less GPU memory
+    # this requires the `bitsandbytes` library
+    bnb_config = transformers.BitsAndBytesConfig(
+        load_in_4bit=True,
+        bnb_4bit_quant_type='nf4',
+        bnb_4bit_use_double_quant=True,
+        bnb_4bit_compute_dtype=bfloat16
+    )
+
+    model_config = transformers.AutoConfig.from_pretrained(
+        model_id,
+        use_auth_token=hf_auth
+    )
+
+    model = transformers.AutoModelForCausalLM.from_pretrained(
+        model_id,
+        trust_remote_code=True,
+        config=model_config,
+        quantization_config=bnb_config,
+        device_map='auto',
+        use_auth_token=hf_auth
+    )
+    model.eval()
+    print(f"Model loaded on {device}")
+
+    tokenizer = transformers.AutoTokenizer.from_pretrained(
+        model_id,
+        use_auth_token=hf_auth
+    )
+
+    stop_list = ['\nHuman:', '\n```\n']
+    stop_token_ids = [tokenizer(x)['input_ids'] for x in stop_list]
+    stop_token_ids = [torch.LongTensor(x).to(device) for x in stop_token_ids]
+
+    # define custom stopping criteria object
+    class StopOnTokens(StoppingCriteria):
+        def __call__(self, input_ids: torch.LongTensor, scores: torch.FloatTensor, **kwargs) -> bool:
+            for stop_ids in stop_token_ids:
+                if torch.eq(input_ids[0][-len(stop_ids):], stop_ids).all():
+                    return True
+            return False
+
+    stopping_criteria = StoppingCriteriaList([StopOnTokens()])
+    generate_text = transformers.pipeline(
+        model=model, tokenizer=tokenizer,
+        return_full_text=True,  # langchain expects the full text
+        task='text-generation',
+        # we pass model parameters here too
+        #stopping_criteria=stopping_criteria,  # without this model rambles during chat
+        temperature=0.0,  # 'randomness' of outputs, 0.0 is the min and 1.0 the max
+        max_new_tokens=3000,  # mex number of tokens to generate in the output
+        repetition_penalty=1.1  # without this output begins repeating
+    )
+
+
+    llm = HuggingFacePipeline(pipeline=generate_text)
+    return (model, llm)
+
+def run(model_id):
+    #model_id = 'meta-llama/Llama-2-70b-chat-hf'
+    #model_id = "meta-llama/Llama-2-7b-hf"
+    model_id = "meta-llama/Llama-2-7b-chat-hf"
+    # Info: https://huggingface.co/docs/hub/security-tokens
+    hf_auth = 'INSERT YOUR HUGGINGFACE AUTHORIZATION TOKEN TO DOWNLOAD HF MODELS'
+    model, llm = load_llm(model_id, hf_auth)
+    pdb.set_trace()
+
+    
+if __name__ == '__main__':
+    
+
+
+    os.environ["SERPAPI_API_KEY"] = ""
+    os.environ["OPENAI_API_KEY"] = ""
+    
+    xs = [
+        [1.0],
+        [1.0],
+        [1.0],
+        [1.0]
+    ]
+    
+    output_folder = './data/peru/laws/summaries'
+    summary = Summary(output_folder)
+    files = [
+        './data/peru/laws/pdfs/00336.txt',
+        './data/peru/laws/pdfs/00350.txt',
+        './data/peru/laws/pdfs/00349.txt',
+        './data/peru/laws/pdfs/00180.txt',
+    ]
+    docs = [summary(file_path, language='Spanish', overwrite=False) for file_path in files]
+
+    ys = [
+        [0.0, 1.0], # published
+        [0.0, 1.0], # published
+        [1.0, 0.0], # archived
+        [1.0, 0.0]  # archived
+    ]
+
+    ys = [[0.0, 1.0], [0.0, 1.0], [1.0, 0.0], [1.0, 0.0]]
+
+    # TODO: test model = MLP(1, [1, 1]), model = MLP(1, [1])
+    #model = MLP(1, [3, 1])
+    llm = None
+    model = MLP(1, [1, 1], llm=llm)
+    epochs = 10
+    lr = 1e-4
+    for epoch in range(epochs):
+        # forward
+        loss = 0
+        for i in tqdm(range(len(docs))):
+            opinions = model(docs[i])
+            ypred = [opinion.score for opinion_pair in opinions for opinion in opinion_pair.get_pos_neg_opinions()]
+            loss += sum([(y- yp)**2 for y, yp in zip(ys[i], ypred)])
+        # backward
+        model.zero_grad()            
+        loss.backward()
+        # update params
+        for p in model.parameters():
+            p.data += -lr*p.grad
+        print(f'epoch {epoch},  iteration: {i}, loss: {loss}')
+        pdb.set_trace()
+        trace_graph.draw_dot(loss, format='png', output_filepath=f'./data/peru/laws/summaries/epoch_{epoch}')
