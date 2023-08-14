@@ -139,4 +139,4 @@ if __name__ == '__main__':
     parser.add_argument("-o", "--openai_auth", help="Open AI Key")
     parser.add_argument("-f", "--hf_auth", help="HuggingFace Key")
     args = parser.parse_args()
-    run(model_id, args.openaikey, args.hf_auth)
+    run(model_id, args.openai_auth, args.hf_auth)
