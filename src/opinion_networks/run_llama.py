@@ -138,4 +138,5 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("-o", "--openai_auth", help="Open AI Key")
     parser.add_argument("-h", "--hf_auth", help="HuggingFace Key")
+    args = argParser.parse_args()
     run(model_id, args.openaikey, args.hf_auth)
