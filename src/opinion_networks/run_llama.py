@@ -74,21 +74,12 @@ def load_llm(model_id, hf_auth):
     return (model, llm)
 
 def run(model_id):
-    #model_id = 'meta-llama/Llama-2-70b-chat-hf'
-    #model_id = "meta-llama/Llama-2-7b-hf"
-    model_id = "meta-llama/Llama-2-7b-chat-hf"
     # Info: https://huggingface.co/docs/hub/security-tokens
-    hf_auth = 'INSERT YOUR HUGGINGFACE AUTHORIZATION TOKEN TO DOWNLOAD HF MODELS'
+    hf_auth = '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'
     model, llm = load_llm(model_id, hf_auth)
-    pdb.set_trace()
-
     
-if __name__ == '__main__':
-    
-
-
     os.environ["SERPAPI_API_KEY"] = ""
-    os.environ["OPENAI_API_KEY"] = ""
+    os.environ["OPENAI_API_KEY"] = "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"
     
     xs = [
         [1.0],
@@ -138,3 +129,10 @@ if __name__ == '__main__':
         print(f'epoch {epoch},  iteration: {i}, loss: {loss}')
         pdb.set_trace()
         trace_graph.draw_dot(loss, format='png', output_filepath=f'./data/peru/laws/summaries/epoch_{epoch}')
+
+    
+if __name__ == '__main__':
+    #model_id = 'meta-llama/Llama-2-70b-chat-hf'
+    #model_id = "meta-llama/Llama-2-7b-hf"
+    model_id = "meta-llama/Llama-2-7b-chat-hf"
+    run(model_id)
