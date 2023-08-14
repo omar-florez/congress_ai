@@ -73,13 +73,12 @@ def load_llm(model_id, hf_auth):
     llm = HuggingFacePipeline(pipeline=generate_text)
     return (model, llm)
 
-def run(model_id, OPENAI_API_KEY):
+def run(model_id, openai_auth, hf_auth):
     # Info: https://huggingface.co/docs/hub/security-tokens
-    hf_auth = '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'
     model, llm = load_llm(model_id, hf_auth)
     
-    os.environ["SERPAPI_API_KEY"] = ""
-    os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
+    os.environ["SERPAPI_API_KEY"] = hf_auth
+    os.environ["OPENAI_API_KEY"] = openai_auth
     
     xs = [
         [1.0],
@@ -137,7 +136,8 @@ if __name__ == '__main__':
     #model_id = "meta-llama/Llama-2-7b-hf"
     model_id = "meta-llama/Llama-2-7b-chat-hf"
     parser = argparse.ArgumentParser()
-    parser.add_argument("-k", "--openaikey", help="Open AI Key")
+    parser.add_argument("-o", "--openai_auth", help="Open AI Key")
+    parser.add_argument("-h", "--hf_auth", help="HuggingFace Key")
     args = parsers.parse_args()
     OPENAI_API_KEY = args.openaikey
     run(model_id, OPENAI_API_KEY)
