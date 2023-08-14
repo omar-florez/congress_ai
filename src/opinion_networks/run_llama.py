@@ -73,13 +73,13 @@ def load_llm(model_id, hf_auth):
     llm = HuggingFacePipeline(pipeline=generate_text)
     return (model, llm)
 
-def run(model_id):
+def run(model_id, OPENAI_API_KEY):
     # Info: https://huggingface.co/docs/hub/security-tokens
     hf_auth = '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'
     model, llm = load_llm(model_id, hf_auth)
     
     os.environ["SERPAPI_API_KEY"] = ""
-    os.environ["OPENAI_API_KEY"] = "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"
+    os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
     
     xs = [
         [1.0],
@@ -130,9 +130,14 @@ def run(model_id):
         pdb.set_trace()
         trace_graph.draw_dot(loss, format='png', output_filepath=f'./data/peru/laws/summaries/epoch_{epoch}')
 
-    
+
+import argparse
 if __name__ == '__main__':
     #model_id = 'meta-llama/Llama-2-70b-chat-hf'
     #model_id = "meta-llama/Llama-2-7b-hf"
     model_id = "meta-llama/Llama-2-7b-chat-hf"
-    run(model_id)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-k", "--openaikey", help="Open AI Key")
+    args = parsers.parse_args()
+    OPENAI_API_KEY = args.openaikey
+    run(model_id, OPENAI_API_KEY)
