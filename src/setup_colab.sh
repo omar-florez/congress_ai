@@ -4,9 +4,5 @@ pip install -r congress_ai/requirements.txt
 pip install openai
 
 #cd congress_ai/src/
-<<<<<<< HEAD
-#python opinion_networks/run_llama.py
-#git add .; git commit -a --amend; git push orign main
-=======
-#python opinion_networks/run_llama.py
->>>>>>> e1c7457d8da3d9ab43be172a3179de7aa226af10
+#python opinion_networks/run_llama.py -k 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 -h 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
+#git add .; git commit -m "Changes on opinion networks"; git push origin main
