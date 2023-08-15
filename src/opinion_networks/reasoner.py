@@ -85,8 +85,10 @@ class Reasoner:
             background=opinion_prompt.get_background(self.background), 
             language=self.language
         )   
-        ##pdb.set_trace()
-        opinions = OpinionPair(output_json, law_str)
+        try:
+            opinions = OpinionPair(output_json, law_str)
+        except: 
+            pdb.set_trace()
         return opinions   
 
     """ Convert the summary of a law into Opinions, which is an objeact that contains a positve and negative opinion"""
@@ -104,6 +106,7 @@ class Reasoner:
             # extract_json_prompt = f"""Extract the array contained in this text:{output_json}\n\n\nOUTPUT:"""
             # output_json2 = self.llm(extract_json_prompt)
             # pp output_json2
+            # Token indices sequence length is longer than the specified maximum sequence length for this model (1335 > 1024)
         except: 
             pdb.set_trace()
         opinions = OpinionPair(output_json, law_str)

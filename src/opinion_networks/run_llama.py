@@ -108,7 +108,7 @@ def run(model_id, openai_auth, hf_auth):
 
     # TODO: test model = MLP(1, [1, 1]), model = MLP(1, [1])
     #model = MLP(1, [3, 1])
-    model = MLP(1, [2, 1], llm=llm)
+    model = MLP(1, [1, 1], llm=llm)
     epochs = 10
     lr = 1e-4
     for epoch in range(epochs):
