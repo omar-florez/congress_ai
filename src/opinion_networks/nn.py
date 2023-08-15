@@ -34,7 +34,7 @@ class Module:
         return []
 
 class Neuron(Module):
-    def __init__(self, nin: int, nonlin: bool = True, language: str = 'Spanish', background: Optional = None, **kwargs):
+    def __init__(self, nin: int, nonlin: bool = True, language: str = 'Spanish', background_fn: Optional = None, **kwargs):
         #assert len(opinions) == nin, "There should the same number of weights and opinions"
         # 2*nin because we have to store the attention of each neuron on each positive and negative opinions
         self.w_pos = [Value(random.uniform(-1,1)) for _ in range(nin)]
@@ -44,7 +44,8 @@ class Neuron(Module):
         self.nonlin = nonlin
         self.opinions_in: list[str] = None
         self.opinion_out: str = None
-        self.background: str = background
+        pdb.set_trace()
+        self.background: str = background_fn()
         self.language: str = language
         self.type = kwargs['type']
         self.temperature = 0.0 

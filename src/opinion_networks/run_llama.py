@@ -12,6 +12,29 @@ from torch import cuda, bfloat16
 import transformers
 from transformers import StoppingCriteria, StoppingCriteriaList
 from langchain.llms import HuggingFacePipeline
+import random
+
+def background_fn():
+    cities = [
+        "Lima",
+        "Arequipa",
+        "Cusco",
+        "Trujillo",
+        "Chiclayo",
+        "Puno",
+        "Iquitos",
+        "Cajamarca",
+        "Tacna",
+        "Huancayo",
+        "Piura",
+        "Ayacucho",
+        "Chimbote",
+        "Huaraz",
+        "Tumbes",
+        "Puerto Maldonado"
+    ]
+    background = f"A person that represents the interest and values of someone from {random.choice(cities)}"
+    return background
 
 def load_llm(model_id, hf_auth):
     device = f'cuda:{cuda.current_device()}' if cuda.is_available() else 'cpu'
@@ -108,7 +131,7 @@ def run(model_id, openai_auth, hf_auth):
 
     # TODO: test model = MLP(1, [1, 1]), model = MLP(1, [1])
     #model = MLP(1, [3, 1])
-    model = MLP(1, [2, 1], llm=llm)
+    model = MLP(1, [2, 1], llm=llm, background_fn=background_fn)
     epochs = 10
     lr = 1e-4
     for epoch in range(epochs):
