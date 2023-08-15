@@ -34,16 +34,48 @@ OUTPUT:
 """
 
 #------------------------------------------------------------------------------------------------------------------------
-reduce_template = """Given this law:
+# reduce_template = """Given this law:
+# {law}
+
+# and this list of opinions:
+# {opinions}
+
+# Your task is to use your critical thinking to generate a two well-thought and diverse opinions, one in favor and another against that law, combining opinions that are similar, and creating new ones by weighing the evidence presented and associating ideas in such a way as to enhance the original opinions. 
+# {background}
+
+# Return the two opinions in the following JSON format:
+
+# ```json
+# [
+# {{
+# "Opinion": "+",
+# "Reasoning": "Reasons why you would vote in favor of that law.",
+# "Score": "A numeric value between 0.0 and 1.0 indicating how much you are support your opinion."
+# }},
+# {{
+# "Opinion": "-",
+# "Reasoning": "Reasons why you would vote against that law.",
+# "Score": "A numeric value between 0.0 and 1.0 indicating how much you are support your opinion."
+# }}
+# ]
+# ```
+
+# The output should be in {language} and only include the JSON output. 
+
+
+# OUTPUT:
+# """
+
+reduce_template = """Considering the following law:
 {law}
 
 and this list of opinions:
 {opinions}
 
-Your task is to use your critical thinking to generate a two well-thought and diverse opinions, one in favor and another against that law, combining opinions that are similar, and creating new ones by weighing the evidence presented and associating ideas in such a way as to enhance the original opinions. 
+Use these opinions to generate two new comprehensive opinions by associating the main ideas of the opinions. 
 {background}
 
-Return the two opinions in the following JSON format:
+Return these two opinions, one in favor and another against that law, in the following JSON format:
 
 ```json
 [
