@@ -3,13 +3,13 @@ from langchain.prompts import PromptTemplate
 def get_background(background):
     if background is None:
         return "\n"
-    background = f"""\nAlign this opinion with the values, experiences, and interests of someone that has the following background: {background}\n"""
+    background = f"""\nAlign these opinions to the values, experiences, and interests of someone that has the following background: {background}\n"""
     return background.strip()
 
 #------------------------------------------------------------------------------------------------------------------------
 read_template = """Considering the following law:
 {law}
-{background}
+
 Return two opinions, one in favor and another against that law, in the following JSON format:
 
 ```json
@@ -27,7 +27,7 @@ Return two opinions, one in favor and another against that law, in the following
 ]
 ```
 
-The output should be in {language} and only include the JSON output.
+{background}
 
 
 OUTPUT:
@@ -66,10 +66,13 @@ OUTPUT:
 # OUTPUT:
 # """
 #------------------------------------------------------------------------------------------------------------------------
-summary_template = """Considering the following law:
+summary_template = """Considering these opinions:
+{opinions}
+
+Combine them into two opinions, one in favor and another against this law:
 {law}
-{background}
-Return two opinions, one in favor and another against that law, in the following JSON format:
+
+In the following JSON format:
 
 ```json
 [
