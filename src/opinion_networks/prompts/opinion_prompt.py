@@ -7,10 +7,10 @@ def get_background(background):
     return background.strip()
 
 #------------------------------------------------------------------------------------------------------------------------
-read_template = """Considering the following law:
+read_template = """Considering the following law written in {language}:
 {law}
 
-Return two opinions, one in favor and another against that law, in the following JSON format:
+Return two opinions, an opinion in favor of that law and an opinion against that law in this JSON format:
 
 ```json
 [
@@ -141,8 +141,8 @@ Your task is to use your critical thinking to generate a bulleted list of divers
 OUTPUT:
 """
 
-#READ_PROMPT = PromptTemplate(input_variables=["law", "background", "language"], template=read_template)
-READ_PROMPT = PromptTemplate(input_variables=["law", "background"], template=read_template)
+READ_PROMPT = PromptTemplate(input_variables=["law", "background", "language"], template=read_template)
+#READ_PROMPT = PromptTemplate(input_variables=["law", "background"], template=read_template)
 COLLAPSE_PROMPT = PromptTemplate(input_variables=["law", "opinions"], template=collapse_template)
 REDUCE_PROMPT = PromptTemplate(input_variables=["law", "opinions", "background", "language"], template=reduce_template)
 DECIDE_PROMPT = PromptTemplate(input_variables=["law", "opinions", "background", "language"], template=reduce_template)
