@@ -141,7 +141,8 @@ Your task is to use your critical thinking to generate a bulleted list of divers
 OUTPUT:
 """
 
-READ_PROMPT = PromptTemplate(input_variables=["law", "background", "language"], template=read_template)
+#READ_PROMPT = PromptTemplate(input_variables=["law", "background", "language"], template=read_template)
+READ_PROMPT = PromptTemplate(input_variables=["law", "background"], template=read_template)
 COLLAPSE_PROMPT = PromptTemplate(input_variables=["law", "opinions"], template=collapse_template)
 REDUCE_PROMPT = PromptTemplate(input_variables=["law", "opinions", "background", "language"], template=reduce_template)
 DECIDE_PROMPT = PromptTemplate(input_variables=["law", "opinions", "background", "language"], template=reduce_template)
