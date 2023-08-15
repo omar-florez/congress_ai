@@ -98,7 +98,10 @@ class Reasoner:
         )
         
         pdb.set_trace()
-        output_json = self.llm(prompt)
+        try:
+            output_json = self.llm(prompt)
+        except: 
+            pdb.set_trace()
         opinions = OpinionPair(output_json, law_str)
         return opinions      
     
