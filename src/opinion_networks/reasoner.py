@@ -97,7 +97,7 @@ class Reasoner:
             language=self.language
         )
         
-        ##pdb.set_trace()
+        pdb.set_trace()
         output_json = self.llm(prompt)
         opinions = OpinionPair(output_json, law_str)
         return opinions      
