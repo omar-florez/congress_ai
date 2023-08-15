@@ -43,6 +43,8 @@ class Reasoner:
         # `combine_documents_chain` in one go. In this case. This method is called recursively on as big 
         # of groups of documents as are allowed.
         collapse_prompt = opinion_prompt.COLLAPSE_PROMPT
+        pdb.set_trace()
+
         collapse_llm_chain = LLMChain(llm=self.llm, prompt=collapse_prompt)
         collapse_documents_chain = StuffDocumentsChain(
             llm_chain=collapse_llm_chain, 
