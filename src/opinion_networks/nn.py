@@ -44,7 +44,6 @@ class Neuron(Module):
         self.nonlin = nonlin
         self.opinions_in: list[str] = None
         self.opinion_out: str = None
-        pdb.set_trace()
         self.background: str = background_fn()
         self.language: str = language
         self.type = kwargs['type']
