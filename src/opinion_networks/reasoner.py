@@ -98,7 +98,7 @@ class Reasoner:
         prompt = opinion_prompt.READ_PROMPT.format(
             law=law_str, 
             background=opinion_prompt.get_background(self.background),
-            //language=self.language
+            #language=self.language
         )
         
         #pdb.set_trace()
