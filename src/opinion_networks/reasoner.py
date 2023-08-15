@@ -97,9 +97,13 @@ class Reasoner:
             language=self.language
         )
         
-        pdb.set_trace()
+        #pdb.set_trace()
         try:
             output_json = self.llm(prompt)
+            output_json = output_json[output_json.find('['): output_json.find(']')+1]
+            # extract_json_prompt = f"""Extract the array contained in this text:{output_json}\n\n\nOUTPUT:"""
+            # output_json2 = self.llm(extract_json_prompt)
+            # pp output_json2
         except: 
             pdb.set_trace()
         opinions = OpinionPair(output_json, law_str)
