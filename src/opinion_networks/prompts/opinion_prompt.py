@@ -3,8 +3,8 @@ from langchain.prompts import PromptTemplate
 def get_background(background):
     if background is None:
         return "\n"
-    prompt = """\nAlign this opinion with the values, experiences, and interests of someone that has the following background: {background}\n"""
-    return prompt.format(background=background).strip()
+    background = f"""\nAlign this opinion with the values, experiences, and interests of someone that has the following background: {background}\n"""
+    return background.strip()
 
 #------------------------------------------------------------------------------------------------------------------------
 read_template = """Considering the following law:
