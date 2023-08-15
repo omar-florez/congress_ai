@@ -98,7 +98,8 @@ def load_llm(model_id, hf_auth):
 
 def run(model_id, openai_auth, hf_auth):
     # Info: https://huggingface.co/docs/hub/security-tokens
-    model, llm = load_llm(model_id, hf_auth)
+    #model, llm = load_llm(model_id, hf_auth)
+    llm = None
     
     os.environ["SERPAPI_API_KEY"] = hf_auth
     os.environ["OPENAI_API_KEY"] = openai_auth
