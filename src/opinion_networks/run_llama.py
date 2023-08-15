@@ -33,7 +33,7 @@ def background_fn():
         "Tumbes",
         "Puerto Maldonado"
     ]
-    background = f"A person that represents the interest and values of someone from {random.choice(cities)}"
+    background = f"A person from {random.choice(cities)} in Peru."
     return background
 
 def load_llm(model_id, hf_auth):
