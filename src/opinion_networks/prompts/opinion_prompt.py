@@ -65,6 +65,33 @@ OUTPUT:
 
 # OUTPUT:
 # """
+#------------------------------------------------------------------------------------------------------------------------
+summary_template = """Considering the following law:
+{law}
+{background}
+Return two opinions, one in favor and another against that law, in the following JSON format:
+
+```json
+[
+{{
+"Opinion": "+",
+"Reasoning": "Reasons why you would vote in favor of that law.",
+"Score": "A numeric value between 0.0 and 1.0 indicating how much you are support your opinion."
+}},
+{{
+"Opinion": "-",
+"Reasoning": "Reasons why you would vote against that law.",
+"Score": "A numeric value between 0.0 and 1.0 indicating how much you are support your opinion."
+}}
+]
+```
+
+The output should be in {language} and only include the JSON output.
+
+
+OUTPUT:
+"""
+
 
 reduce_template = """Considering the following law:
 {law}

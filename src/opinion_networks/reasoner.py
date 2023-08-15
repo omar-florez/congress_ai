@@ -105,14 +105,14 @@ class Reasoner:
         try:
             output_json = self.llm(prompt)
             output_json = output_json[output_json.find('['): output_json.find(']')+1]
+            opinions = OpinionPair(output_json, law_str)
             # extract_json_prompt = f"""Extract the array contained in this text:{output_json}\n\n\nOUTPUT:"""
             # output_json2 = self.llm(extract_json_prompt)
             # pp output_json2
             # Token indices sequence length is longer than the specified maximum sequence length for this model (1335 > 1024)
             # the current text generation call will exceed the model's predefined maximum length (4096)
         except: 
-            pdb.set_trace()
-        opinions = OpinionPair(output_json, law_str)
+            pdb.set_trace()        
         return opinions      
     
     """ Convert `opinions` into Opinions, which is an objeact that contains a positve and negative opinion. 
