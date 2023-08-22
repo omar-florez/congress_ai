@@ -31,7 +31,7 @@ class Summary:
         if llm is None:
             self.llm = OpenAI(temperature=0.0, model_name="text-davinci-003", max_tokens=1000)
         else:
-            self.llm - llm
+            self.llm = llm
 
     def __call__(self, file_path: str, language: str, overwrite=False) -> OpinionPair:
         file_name = os.path.basename(file_path)
@@ -162,7 +162,7 @@ class LawDataset:
         summary = Summary(self.summaries_root, llm=self.llm)
         files = self.get_law_text_paths(raw_text_root=self.raw_text_root)
         law_labels = self.get_law_labels(crawled_files_root=self.crawled_files_root)
-        pdb.set_trace()
+        
         x = [summary(file_path, language='Spanish', overwrite=False) for file_path in files]
         y = [law_labels[os.path.splitext(os.path.basename(x))[0]] for x in files] 
         return x, y
