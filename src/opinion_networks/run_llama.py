@@ -3,7 +3,7 @@ sys.path.append(".")
 from tqdm import tqdm
 import pdb
 
-from opinion_networks.dataset import Summary
+from opinion_networks.dataset import Summary, LawDataset
 from opinion_networks.nn import MLP
 from opinion_networks import trace_graph
 
@@ -88,7 +88,7 @@ def load_llm(model_id, hf_auth):
         # we pass model parameters here too
         #stopping_criteria=stopping_criteria,  # without this model rambles during chat
         temperature=0.0,  # 'randomness' of outputs, 0.0 is the min and 1.0 the max
-        max_new_tokens=3000,  # mex number of tokens to generate in the output
+        max_new_tokens=1000,  # mex number of tokens to generate in the output
         repetition_penalty=1.1  # without this output begins repeating
     )
 
@@ -96,39 +96,17 @@ def load_llm(model_id, hf_auth):
     llm = HuggingFacePipeline(pipeline=generate_text)
     return (model, llm)
 
-def run(model_id, openai_auth, hf_auth):
-    # Info: https://huggingface.co/docs/hub/security-tokens
-    #model, llm = load_llm(model_id, hf_auth)
-    llm = None
-    
+def run(model_id, openai_auth, hf_auth):    
     os.environ["SERPAPI_API_KEY"] = hf_auth
     os.environ["OPENAI_API_KEY"] = openai_auth
     
-    xs = [
-        [1.0],
-        [1.0],
-        [1.0],
-        [1.0]
-    ]
-    
-    output_folder = './data/peru/laws/summaries'
-    summary = Summary(output_folder)
-    files = [
-        './data/peru/laws/pdfs/00336.txt',
-        './data/peru/laws/pdfs/00350.txt',
-        './data/peru/laws/pdfs/00349.txt',
-        './data/peru/laws/pdfs/00180.txt',
-    ]
-    docs = [summary(file_path, language='Spanish', overwrite=False) for file_path in files]
-
-    ys = [
-        [0.0, 1.0], # published
-        [0.0, 1.0], # published
-        [1.0, 0.0], # archived
-        [1.0, 0.0]  # archived
-    ]
-
-    ys = [[0.0, 1.0], [0.0, 1.0], [1.0, 0.0], [1.0, 0.0]]
+    # Info: https://huggingface.co/docs/hub/security-tokens
+    model, llm = load_llm(model_id, hf_auth)
+    raw_text_root = "data/peru/laws/texts"
+    crawled_files_root = 'data/peru/laws/crawled/'
+    summaries_root = 'data/peru/laws/summaries'
+    dataset = LawDataset(raw_text_root, crawled_files_root, summaries_root, llm=llm)
+    x, y = dataset.load()
 
     # TODO: test model = MLP(1, [1, 1]), model = MLP(1, [1])
     #model = MLP(1, [3, 1])

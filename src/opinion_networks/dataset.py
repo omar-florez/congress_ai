@@ -19,26 +19,31 @@ from langchain.chains import MapReduceDocumentsChain
 from opinion_networks.prompts import law_prompt
 from opinion_networks.opinion import OpinionPair
 
+from typing import Optional, Any, Dict, List
+import json
+
 class Summary:
-    def __init__(self, output_folder):
+    def __init__(self, output_folder, llm=None):
         self.output_folder = output_folder
         """max_tokens: The maximum number of tokens to generate in the completion.
         -1 returns as many tokens as possible given the prompt and
         the models maximal context size."""
-        self.llm = OpenAI(temperature=0.0, model_name="text-davinci-003", max_tokens=1000)
+        if llm is None:
+            self.llm = OpenAI(temperature=0.0, model_name="text-davinci-003", max_tokens=1000)
 
     def __call__(self, file_path: str, language: str, overwrite=False) -> OpinionPair:
         file_name = os.path.basename(file_path)
         output_file = os.path.join(self.output_folder, file_name)
         if os.path.exists(output_file) and not overwrite:
+            print(f'Reading from existing file: {output_file}')
             with open(output_file, 'r') as f:
                 summary = f.read()
             return summary
 
         with open(file_path, 'r') as f:
             raw_text = f.read()           
-        # LLM to use in map and reduce stages 
         
+        # LLM to use in map and reduce stages         
         map_llm_chain = LLMChain(llm=self.llm, prompt=law_prompt.MAP_PROMPT)
         reduce_llm_chain = LLMChain(llm=self.llm, prompt=law_prompt.REDUCE_PROMPT)
 
@@ -82,6 +87,84 @@ class Summary:
         with open(output_path, 'w') as f:
             f.write(summary)
         return summary
+
+class LawDataset:
+    def __init__(self, raw_text_root, crawled_files_root, summaries_root, llm=None):
+        self.raw_text_root = raw_text_root
+        self.crawled_files_root = crawled_files_root
+        self.summaries_root = summaries_root
+        self.llm = llm
+
+    def get_law_text_paths(self, raw_text_root: Optional[str] = None) -> List[str]:
+        if raw_text_root is None:
+            files = [
+                './data/peru/laws/texts/00336.txt',
+                './data/peru/laws/texts/00350.txt',
+                './data/peru/laws/texts/00349.txt',
+                './data/peru/laws/texts/00180.txt',
+            ]
+            return files
+        
+        files = [os.path.join(raw_text_root, x) for x in os.listdir(raw_text_root) if x.endswith('.txt')]
+        return files
+
+    def get_law_labels(self, crawled_files_root):
+        """Parse (law code, label) dictionary entries, 0: rejected, 1: approved."""
+
+        law_labels = {}
+        file_paths = [x for x in os.listdir(crawled_files_root) if x.endswith('.jsonl')]
+        for file_name in file_paths:
+            with open(os.path.join(crawled_files_root, file_name)) as f:
+                for line in f.readlines():
+                    law_info = json.loads(line)
+                    key = law_info['codigo_ley']
+                    value = law_info['estado_ley']
+                    if value.lower() == 'al archivo':
+                        law_labels[key] = 0
+                    if value.lower() == 'publicado el peruano':
+                        law_labels[key] = 1
+
+        """
+        labeled laws = 7195/8104 (88.78%)
+        Counter([law_labels[x] for x in law_labels])
+        Counter({
+            'Al Archivo': 5030, 
+            'Publicado El Peruano': 2165, 
+            'Presentado': 362, 
+            'Retirado': 155, 
+            'En comisión': 147, 
+            'Dictamen Negativo': 66, 
+            'Orden del Día': 61, 
+            'Dictamen': 55, 
+            'Autógrafa': 13, 
+            'Observado': 11, 
+            'Rechazado de Plano': 10, 
+            'Aprobado': 8, 
+            'En comisiˇn': 4, 
+            'Dispensado 2da. votación': 3, 
+            'Se inhibe': 3, 
+            'En comisiµn': 2, 
+            'Aprobado en Primera Votación': 1, 
+            'Devuelto': 1, 'En comisi¾n': 1, 
+            'Orden del DÝa': 1, 
+            'Orden del DÌa': 1, 
+            'Anulado': 1, 
+            'Orden del DŪa': 1, 
+            'Reconsideración': 1, 
+            'En comisiůn': 1
+        })
+        """
+        return law_labels
+    
+    def load(self):
+        summary = Summary(self.summaries_root, llm=self.llm)
+        files = self.get_law_text_paths(raw_text_root=self.raw_text_root)
+        law_labels = self.get_law_labels(crawled_files_root=self.crawled_files_root)
+        pdb.set_trace()
+        x = [summary(file_path, language='Spanish', overwrite=False) for file_path in files]
+        y = [law_labels[os.path.splitext(os.path.basename(x))[0]] for x in files] 
+        return x, y
+        
 
 if __name__ == "__main__":
     import os

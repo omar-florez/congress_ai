@@ -3,7 +3,7 @@ from langchain.prompts import PromptTemplate
 def get_background(background):
     if background is None:
         return "\n"
-    background = f"""\nAlign these opinions to the values, experiences, and interests of someone that has the following background: {background}\n"""
+    background = f"""\nAlign these opinions to the values, experiences, and economic activity related to people with this background: {background}\n"""
     return background.strip()
 
 #------------------------------------------------------------------------------------------------------------------------
@@ -16,12 +16,12 @@ Return two opinions, an opinion in favor of that law and an opinion against that
 [
 {{
 "Opinion": "+",
-"Reasoning": "Reasons why you would vote in favor of that law.",
+"Reasoning": "Reasons why you would vote in favor of that law including evidences and positive consequences.",
 "Score": "A numeric value between 0.0 and 1.0 indicating how much you are support your opinion."
 }},
 {{
 "Opinion": "-",
-"Reasoning": "Reasons why you would vote against that law.",
+"Reasoning": "Reasons why you would vote in favor of that law including evidences and negative consequences.",
 "Score": "A numeric value between 0.0 and 1.0 indicating how much you are support your opinion."
 }}
 ]
@@ -78,12 +78,12 @@ In the following JSON format:
 [
 {{
 "Opinion": "+",
-"Reasoning": "Reasons why you would vote in favor of that law.",
+"Reasoning": "Reasons why you would vote in favor of that law including evidences and positive consequences.",
 "Score": "A numeric value between 0.0 and 1.0 indicating how much you are support your opinion."
 }},
 {{
 "Opinion": "-",
-"Reasoning": "Reasons why you would vote against that law.",
+"Reasoning": "Reasons why you would vote in favor of that law including evidences and negative consequences.",
 "Score": "A numeric value between 0.0 and 1.0 indicating how much you are support your opinion."
 }}
 ]
@@ -96,13 +96,13 @@ OUTPUT:
 """
 
 
-reduce_template = """Considering the following law:
+reduce_template = """Given this law:
 {law}
 
-and this list of opinions:
+Reflect on this list of opinions about such law:
 {opinions}
 
-Use these opinions to generate two new comprehensive opinions by associating the main ideas of the opinions. 
+Your job is to form your own new opinions by giving more importance to opinions with higher scores, associating the ideas of the original opinions, fact-checking their evidences, analyze their motivations. 
 {background}
 
 Return these two opinions, one in favor and another against that law, in the following JSON format:
@@ -111,12 +111,12 @@ Return these two opinions, one in favor and another against that law, in the fol
 [
 {{
 "Opinion": "+",
-"Reasoning": "Reasons why you would vote in favor of that law.",
+"Reasoning": "Reasons why you would vote in favor of that law including evidences and positive consequences.",
 "Score": "A numeric value between 0.0 and 1.0 indicating how much you are support your opinion."
 }},
 {{
 "Opinion": "-",
-"Reasoning": "Reasons why you would vote against that law.",
+"Reasoning": "Reasons why you would vote in favor of that law including evidences and negative consequences.",
 "Score": "A numeric value between 0.0 and 1.0 indicating how much you are support your opinion."
 }}
 ]
@@ -135,14 +135,16 @@ collapse_template = """Given this law:
 and this list of opinions:
 {opinions}
 
-Your task is to use your critical thinking to generate a bulleted list of diverse opinions, combining opinions that are similar, and creating new ones by weighing the evidence presented and associating ideas in such a way as to enhance the original opinions. 
+Your task is to use your critical thinking to generate a bulleted list of opinions in favor and against the law, combining opinions that are similar, and creating new ones by weighing the evidence presented and associating ideas in such a way as to enhance the original opinions. 
 
+Each item is an opinion with the following format:
+
+Score: A numeric value between 0.0 and 1.0 indicating how much you are support your opinion. Your opinion. 
 
 OUTPUT:
 """
 
 READ_PROMPT = PromptTemplate(input_variables=["law", "background", "language"], template=read_template)
-#READ_PROMPT = PromptTemplate(input_variables=["law", "background"], template=read_template)
 COLLAPSE_PROMPT = PromptTemplate(input_variables=["law", "opinions"], template=collapse_template)
 REDUCE_PROMPT = PromptTemplate(input_variables=["law", "opinions", "background", "language"], template=reduce_template)
 DECIDE_PROMPT = PromptTemplate(input_variables=["law", "opinions", "background", "language"], template=reduce_template)

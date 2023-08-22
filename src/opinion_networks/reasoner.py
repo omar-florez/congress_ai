@@ -34,7 +34,9 @@ class Reasoner:
     def reduce_chain(self, opinions: list[OpinionPair]) -> OpinionPair:
         """Combines a list of opinions into a a list of of elements: a positive and negative opinion."""
         opinions_list = [
-            Document(page_content=opinion.reasoning, metadata={'opinion_type': opinion.opinion_type}) 
+            Document(
+                page_content=f"Score: {opinion.score}. {opinion.reasoning}", 
+                metadata={'opinion_type': opinion.opinion_type}) 
             for out in opinions 
             for opinion in out.get_pos_neg_opinions()
         ]
@@ -43,7 +45,6 @@ class Reasoner:
         # `combine_documents_chain` in one go. In this case. This method is called recursively on as big 
         # of groups of documents as are allowed.
         collapse_prompt = opinion_prompt.COLLAPSE_PROMPT
-        
         collapse_llm_chain = LLMChain(llm=self.llm, prompt=collapse_prompt)
         collapse_documents_chain = StuffDocumentsChain(
             llm_chain=collapse_llm_chain, 
@@ -79,15 +80,15 @@ class Reasoner:
                 # The maximum number of tokens to group documents into
                 token_max=3000)
 
-        law_str = opinions[0].law
-        output_json = reduce_documents_chain.run(
-            input_documents=opinions_list, 
-            law=law_str, 
-            background=opinion_prompt.get_background(self.background), 
-            language=self.language
-        )   
-        pdb.set_trace()
         try:
+            law_str = opinions[0].law
+            output_json = reduce_documents_chain.run(
+                input_documents=opinions_list, 
+                law=law_str, 
+                background=opinion_prompt.get_background(self.background), 
+                language=self.language
+            )   
+            pdb.set_trace()
             opinions = OpinionPair(output_json, law_str)
         except: 
             pdb.set_trace()
@@ -101,7 +102,6 @@ class Reasoner:
             language=self.language
         )
         
-        #pdb.set_trace()
         try:
             output_json = self.llm(prompt)
             output_json = output_json[output_json.find('['): output_json.find(']')+1]

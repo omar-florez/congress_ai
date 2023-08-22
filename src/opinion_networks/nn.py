@@ -98,7 +98,7 @@ class Layer(Module):
         return f"Layer of [{', '.join(str(n) for n in self.neurons)}]"
 
 class MLP(Module):
-    def __init__(self, nin, nouts, **kwargs):
+    def __init__(self, nin, nouts, llm=None, **kwargs):
         sz = [nin] + nouts
         self.layers = []
         self.opinions = []
