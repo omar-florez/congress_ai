@@ -30,6 +30,8 @@ class Summary:
         the models maximal context size."""
         if llm is None:
             self.llm = OpenAI(temperature=0.0, model_name="text-davinci-003", max_tokens=1000)
+        else:
+            self.llm - llm
 
     def __call__(self, file_path: str, language: str, overwrite=False) -> OpinionPair:
         file_name = os.path.basename(file_path)
