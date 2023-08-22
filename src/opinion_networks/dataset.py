@@ -37,11 +37,12 @@ class Summary:
         file_name = os.path.basename(file_path)
         output_file = os.path.join(self.output_folder, file_name)
         if os.path.exists(output_file) and not overwrite:
-            print(f'Reading from existing file: {output_file}')
+            print(f'Load existing summary: {output_file}')
             with open(output_file, 'r') as f:
                 summary = f.read()
             return summary
 
+        print(f'Write new summary: {output_file}')
         with open(file_path, 'r') as f:
             raw_text = f.read()           
         
